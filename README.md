@@ -1,2 +1,4 @@
-# LettuceServer
-The backend server for Lettuce
+appengine-skeleton
+=============================
+
+This is a generated application from the appengine-skeleton archetype.
