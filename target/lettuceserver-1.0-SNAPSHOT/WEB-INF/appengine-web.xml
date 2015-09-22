@@ -3,6 +3,7 @@
     <application>lettuce-1045</application>
     <version>1</version>
     <threadsafe>true</threadsafe>
+    <use-google-connector-j>true</use-google-connector-j>
     
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>

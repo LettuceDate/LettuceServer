@@ -5,14 +5,20 @@
         <servlet-name>healthcheck</servlet-name>
         <servlet-class>com.lettucedate.server.healthcheck</servlet-class>
     </servlet>
-
-
-
+    <servlet>
+        <servlet-name>UserDates</servlet-name>
+        <servlet-class>com.lettucedate.server.UserDates</servlet-class>
+    </servlet>
 
 
     <servlet-mapping>
         <servlet-name>healthcheck</servlet-name>
         <url-pattern>/api/v1/healthcheck</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>UserDates</servlet-name>
+        <url-pattern>/api/v1/dates</url-pattern>
     </servlet-mapping>
 
 
