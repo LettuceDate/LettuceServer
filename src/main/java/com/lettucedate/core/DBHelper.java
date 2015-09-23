@@ -2,6 +2,7 @@ package com.lettucedate.core;
 
 import com.google.appengine.api.utils.SystemProperty;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.*;
 
 /**
@@ -24,8 +25,7 @@ public class DBHelper {
                     // Load the class that provides the "jdbc:google:mysql://"
                     // prefix.
                     Class.forName("com.mysql.jdbc.GoogleDriver");
-                    url =
-                            "jdbc:google:mysql://lettuce-1045:lettuce-db-server?user=root";
+                    url = "jdbc:google:mysql://lettuce-1045:lettuce-db-server?user=root";
                 } else {
                     // Connecting from an external network.
                     Class.forName("com.mysql.jdbc.Driver");
@@ -64,11 +64,14 @@ public class DBHelper {
         }
     }
 
-    public static PreparedStatement PrepareStatement(String theStatement) {
+    public static PreparedStatement PrepareStatement(String theStatement, Boolean returnKeys) {
         PreparedStatement statement = null;
 
         try {
-            statement = GetConnection().prepareStatement(theStatement);
+            if (returnKeys)
+                statement = GetConnection().prepareStatement(theStatement, Statement.RETURN_GENERATED_KEYS);
+            else
+                statement = GetConnection().prepareStatement(theStatement);
 
         } catch (Exception exp) {
             System.out.println(exp.getMessage());

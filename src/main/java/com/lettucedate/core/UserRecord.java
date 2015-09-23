@@ -1,12 +1,12 @@
 package com.lettucedate.core;
 
 import com.google.api.client.util.Joiner;
-import com.sun.deploy.util.StringUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Date;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Created by ultradad on 9/22/15.
@@ -24,7 +24,7 @@ public class UserRecord implements BaseDAO {
     public static UserRecord FindByID(Long searchId) {
         UserRecord newUser = null;
         try {
-            PreparedStatement statement = DBHelper.PrepareStatement("SELECT * FROM LettuceMaster.users WHERE id=?");
+            PreparedStatement statement = DBHelper.PrepareStatement("SELECT * FROM LettuceMaster.users WHERE id=?", false);
             statement.setLong(1, searchId);
             ResultSet theResults = DBHelper.ExecuteQuery(statement);
 
@@ -61,7 +61,7 @@ public class UserRecord implements BaseDAO {
     public static UserRecord FindByFBID(String searchId) {
         UserRecord newUser = null;
         try {
-            PreparedStatement statement = DBHelper.PrepareStatement("SELECT * FROM LettuceMaster.users WHERE facebookid=?");
+            PreparedStatement statement = DBHelper.PrepareStatement("SELECT * FROM LettuceMaster.users WHERE facebookid=?", false);
             statement.setString(1, searchId);
             ResultSet theResults = DBHelper.ExecuteQuery(statement);
 
@@ -126,7 +126,7 @@ public class UserRecord implements BaseDAO {
 
             statementStr += StringUtils.join(values, ", ") + ")";
 
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr);
+            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, true);
 
             // fill in the statement
             if (nickname != null) {
@@ -142,7 +142,7 @@ public class UserRecord implements BaseDAO {
             }
 
             if (dob != null) {
-                statement.setDate(index++, dob);
+                statement.setDate(index++, new java.sql.Date(dob.getTime()));
             }
 
             if (facebookid != null) {
@@ -157,7 +157,7 @@ public class UserRecord implements BaseDAO {
                 statement.setInt(index++, gender);
             }
 
-            statement.execute();
+            statement.executeUpdate();
             ResultSet rs = statement.getGeneratedKeys();
             if (rs.next()){
                 id=rs.getLong(1);

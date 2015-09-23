@@ -9,7 +9,16 @@
         <servlet-name>UserDates</servlet-name>
         <servlet-class>com.lettucedate.server.UserDates</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>FBLogin</servlet-name>
+        <servlet-class>com.lettucedate.server.FBLogin</servlet-class>
+    </servlet>
 
+
+    <servlet-mapping>
+        <servlet-name>FBLogin</servlet-name>
+        <url-pattern>/api/v1/user/facebooklogin</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>healthcheck</servlet-name>

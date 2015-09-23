@@ -63,9 +63,9 @@ public  class Authenticator {
     }
 
     public static boolean authenticate(String digest, String salt, final String password) throws Exception {
-        final byte[] proposedDigest = getHash(ITERATIONS, password, Base64.decodeBase64(salt));
+        final byte[] proposedDigest = getHash(ITERATIONS, password, Base64.decodeBase64(salt.getBytes()));
 
-        return Arrays.equals(proposedDigest, Base64.decodeBase64(digest));
+        return Arrays.equals(proposedDigest, Base64.decodeBase64(digest.getBytes()));
     }
 
 
@@ -150,7 +150,7 @@ public  class Authenticator {
     }
 
     public static UserRecord CurrentUser(HttpSession session) {
-        Object theId = session.getAttribute(USERID);
+        Long theId = (Long)session.getAttribute(USERID);
         if (theId != null) {
             UserRecord newUser = UserRecord.FindByID(theId);
             return newUser;
@@ -207,6 +207,17 @@ public  class Authenticator {
         return new String(out).getBytes(Charset.forName("UTF-8"));
     }
 
+    public static byte[] getHash(final int iterationNb, final String password, final byte[] salt) throws NoSuchAlgorithmException, UnsupportedEncodingException {
+        MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        digest.reset();
+        digest.update(salt);
+        byte[] input = digest.digest(password.getBytes("UTF-8"));
+        for (int i = 0; i < iterationNb; i++) {
+            digest.reset();
+            input = digest.digest(input);
+        }
+        return input;
+    }
 
 
 
