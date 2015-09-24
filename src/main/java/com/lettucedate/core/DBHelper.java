@@ -4,12 +4,13 @@ import com.google.appengine.api.utils.SystemProperty;
 
 import javax.swing.plaf.nimbus.State;
 import java.sql.*;
+import java.util.logging.Logger;
 
 /**
  * Created by ultradad on 9/22/15.
  */
 public class DBHelper {
-
+    private static final Logger log = Logger.getLogger(DBHelper.class.getName());
     public static Connection _currentConnection;
 
     public static Connection GetConnection() {
@@ -26,14 +27,16 @@ public class DBHelper {
                     // prefix.
                     Class.forName("com.mysql.jdbc.GoogleDriver");
                     url = "jdbc:google:mysql://lettuce-1045:lettuce-db-server?user=root";
+                    _currentConnection = DriverManager.getConnection(url);
                 } else {
                     // Connecting from an external network.
                     Class.forName("com.mysql.jdbc.Driver");
-                    url = "jdbc:mysql://173.194.244.58:3306?user=davevr";
+                    url = "jdbc:mysql://173.194.244.58:3306";
+                    _currentConnection = DriverManager.getConnection(url, "davevr", "Love4Runess");
                 }
 
 
-                _currentConnection = DriverManager.getConnection(url);
+
 
                 }
                 catch (ClassNotFoundException exp) {

@@ -17,11 +17,13 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * Created by davevr on 9/21/15.
  */
 public class UserDates extends HttpServlet {
+    private static final Logger log = Logger.getLogger(UserDates.class.getName());
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
     }

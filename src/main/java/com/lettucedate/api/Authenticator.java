@@ -17,6 +17,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import com.lettucedate.core.FacebookUser;
 import com.lettucedate.core.UserRecord;
@@ -97,7 +98,7 @@ public  class Authenticator {
 
             baseURL = "https://graph.facebook.com/me?";
             baseURL += "access_token=" + accessToken;
-            baseURL += "&fields=name,id";
+            baseURL += "&fields=name,id,birthday,first_name,gender,last_name,interested_in";
             baseURL += "&client_id=" + FBAppId;
             baseURL += "&appsecret_proof=" + serverProof;
             url = new URL(baseURL);
@@ -112,6 +113,7 @@ public  class Authenticator {
             FacebookUser fbUser = gson.fromJson(resultStr, FacebookUser.class);
             if (!fbUser.id.equals(fbId)) {
                 // the ids do not match - bad!!
+                log.log(Level.SEVERE, "Facebook ID#s do not match!");
                 return false;
             }
 
@@ -120,6 +122,7 @@ public  class Authenticator {
 
             if (newUser == null) {
                 // create user
+                newUser = UserRecord.CreateFromFacebook(fbUser);
                 newUser = new UserRecord();
                 newUser.facebookid = fbId;
                 newUser.nickname = fbUser.name;
@@ -129,12 +132,14 @@ public  class Authenticator {
                 session.setAttribute(USERID, newUser.id);
             } else {
                 // now set up the session and go
+                newUser.UpdateFromFacebook(fbUser);
                 session.setAttribute(USERID, newUser.id);
             }
             return true;
         }
         catch (Exception exp)
         {
+            log.log(Level.SEVERE, String.format("Exception in Facebook access: %s!", exp.getMessage()));
             return false;
         }
 

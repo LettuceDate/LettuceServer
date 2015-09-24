@@ -1,6 +1,7 @@
 package com.lettucedate.server;
 
 import com.google.appengine.repackaged.com.google.api.client.http.HttpStatusCodes;
+import com.google.apphosting.api.ApiProxy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.lettucedate.api.Authenticator;
@@ -14,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -31,6 +33,7 @@ public class FBLogin extends HttpServlet {
             // yeah!
             long userId = Authenticator.CurrentUserId(session);
             UserRecord newUser = UserRecord.FindByID(userId);
+            log.log(Level.INFO, String.format("Logging in as %s", newUser.nickname));
             DBHelper.ReleaseConnection();
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();
@@ -38,9 +41,11 @@ public class FBLogin extends HttpServlet {
             gson.toJson(newUser, out);
             out.flush();
             out.close();
+            DBHelper.ReleaseConnection();
 
         } else {
             // no luck
+            log.log(Level.WARNING, "FB login Authorization Failed");
             response.setStatus(HttpStatusCodes.STATUS_CODE_UNAUTHORIZED);
         }
     }

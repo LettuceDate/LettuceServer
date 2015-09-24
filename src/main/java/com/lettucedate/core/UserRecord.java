@@ -4,6 +4,7 @@ import com.google.api.client.util.Joiner;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import org.apache.commons.lang3.StringUtils;
@@ -173,8 +174,74 @@ public class UserRecord implements BaseDAO {
         return didIt;
     }
 
+
     public Boolean Update() {
         Boolean didIt = false;
+        try {
+
+            int index = 1;
+
+            String statementStr = "UPDATE LettuceMaster.users SET ";
+            String valueStr = "";
+            ArrayList<String> columnNames = new ArrayList<>();
+            ArrayList<String> values = new ArrayList<>();
+
+            if (firstname != null) {
+                columnNames.add("firstname = ?");
+            }
+
+            if (lastname != null) {
+                columnNames.add("lastname = ?");
+            }
+
+            if (dob != null) {
+                columnNames.add("dob = ?");
+            }
+
+            if (ethnicity != null) {
+                columnNames.add("ethnicity = ?");
+            }
+
+            if (gender != null) {
+                columnNames.add("gender = ?");
+            }
+
+            statementStr += StringUtils.join(columnNames, ", ") + " WHERE id = ?";
+
+            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, false);
+
+            // fill in the statement
+            if (firstname != null) {
+                statement.setString(index++, firstname);
+            }
+
+            if (lastname != null) {
+                statement.setString(index++, lastname);
+            }
+
+            if (dob != null) {
+                statement.setDate(index++, new java.sql.Date(dob.getTime()));
+            }
+
+            if (ethnicity != null) {
+                statement.setInt(index++, ethnicity);
+            }
+
+            if (gender != null) {
+                statement.setInt(index++, gender);
+            }
+
+            // set the id
+            statement.setLong(index++, id);
+
+            statement.executeUpdate();
+
+            statement.close();
+            didIt = true;
+        } catch (Exception exp) {
+            System.out.println(exp.getMessage());
+        }
+
 
         return didIt;
     }
@@ -184,6 +251,107 @@ public class UserRecord implements BaseDAO {
 
         return didIt;
     }
+
+    public static UserRecord CreateFromFacebook(FacebookUser fbUser) {
+        UserRecord newUser = new UserRecord();
+        newUser.facebookid = fbUser.id;
+        newUser.nickname = fbUser.name;
+
+        // now the optional ones
+        if (fbUser.first_name != null)
+            newUser.firstname = fbUser.first_name;
+
+        if (fbUser.last_name != null)
+            newUser.lastname = fbUser.last_name;
+
+        if (fbUser.birthday != null) {
+            SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+            try {
+                newUser.dob = formatter.parse(fbUser.birthday);
+            }
+            catch (java.text.ParseException exp) {
+                System.out.println(exp.getMessage());
+            }
+        }
+
+        if (fbUser.gender != null) {
+            try {
+                String queryString = "SELECT id FROM LettuceMaster.genders WHERE typename = ?";
+                PreparedStatement statement = DBHelper.PrepareStatement(queryString, false);
+                statement.setString(1, fbUser.gender);
+                ResultSet rs = DBHelper.ExecuteQuery(statement);
+                if (rs.next()) {
+                    newUser.gender = rs.getInt("id");
+                }
+            } catch (java.sql.SQLException exp) {
+                System.out.println(exp.getMessage());
+            }
+        }
+
+        return newUser;
+
+    }
+
+    public Boolean UpdateFromFacebook(FacebookUser fbUser) {
+        Boolean madeChange = false;
+
+        if (fbUser.first_name != null) {
+            if ((firstname == null) || (fbUser.first_name.compareTo(firstname) != 0)) {
+                firstname = fbUser.first_name;
+                madeChange = true;
+            }
+        }
+
+        if (fbUser.last_name != null) {
+            if ((lastname == null) || (fbUser.last_name.compareTo(lastname) != 0)) {
+                lastname = fbUser.last_name;
+                madeChange = true;
+            }
+        }
+
+        if (fbUser.birthday != null) {
+            SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
+            try {
+                Date dobDate = formatter.parse(fbUser.birthday);
+                if ((dob == null) || (dobDate.compareTo(dob) != 0)) {
+                    dob = dobDate;
+                    madeChange = true;
+                }
+            }
+            catch (java.text.ParseException exp) {
+                System.out.println(exp.getMessage());
+            }
+        }
+
+        if (fbUser.gender != null) {
+            if (fbUser.gender != null) {
+                try {
+                    String queryString = "SELECT id FROM LettuceMaster.genders WHERE typename = ?";
+                    PreparedStatement statement = DBHelper.PrepareStatement(queryString, false);
+                    statement.setString(1, fbUser.gender);
+                    ResultSet rs = DBHelper.ExecuteQuery(statement);
+                    if (rs.next()) {
+                        int theGender = rs.getInt("id");
+                        if ((gender == null) || (theGender != gender)) {
+                            gender = theGender;
+                            madeChange = true;
+                        }
+                    }
+                } catch (java.sql.SQLException exp) {
+                    System.out.println(exp.getMessage());
+                }
+            }
+
+        }
+
+        if (madeChange) {
+            Update();
+        }
+
+
+        return madeChange;
+    }
+
 
 
 }

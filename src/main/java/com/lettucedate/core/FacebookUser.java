@@ -6,4 +6,10 @@ package com.lettucedate.core;
 public class FacebookUser {
     public String name;
     public String id;
+    public String first_name;
+    public String last_name;
+    public String birthday;
+    public String gender;
+    public String interested_in;
+
 }

@@ -4,6 +4,7 @@
     <version>${app.version}</version>
     <threadsafe>true</threadsafe>
     <use-google-connector-j>true</use-google-connector-j>
+    <sessions-enabled>true</sessions-enabled>
     
     <system-properties>
         <property name="java.util.logging.config.file" value="WEB-INF/logging.properties"/>

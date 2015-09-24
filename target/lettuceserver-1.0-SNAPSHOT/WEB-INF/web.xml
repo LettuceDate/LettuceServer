@@ -13,7 +13,34 @@
         <servlet-name>FBLogin</servlet-name>
         <servlet-class>com.lettucedate.server.FBLogin</servlet-class>
     </servlet>
+    <servlet>
+        <servlet-name>UserProfile</servlet-name>
+        <servlet-class>com.lettucedate.server.UserProfileServlet</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>AddVenue</servlet-name>
+        <servlet-class>com.lettucedate.server.admin.AddVenue</servlet-class>
+    </servlet>
 
+    <servlet>
+        <servlet-name>YelpSearch</servlet-name>
+        <servlet-class>com.lettucedate.server.YelpSearch</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>YelpSearch</servlet-name>
+        <url-pattern>/api/v1/yelpsearch</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>AddVenue</servlet-name>
+        <url-pattern>/api/v1/admin/addvenue</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>UserProfile</servlet-name>
+        <url-pattern>/api/v1/user/profile</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>FBLogin</servlet-name>
@@ -30,5 +57,17 @@
         <url-pattern>/api/v1/dates</url-pattern>
     </servlet-mapping>
 
+
+    <servlet>
+        <servlet-name>VenueEntry</servlet-name>
+        <jsp-file>/VenueEntry.jsp</jsp-file>
+    </servlet>
+
+
+
+    <servlet-mapping>
+        <servlet-name>VenueEntry</servlet-name>
+        <url-pattern>/admin/venueentry</url-pattern>
+    </servlet-mapping>
 
 </web-app>
