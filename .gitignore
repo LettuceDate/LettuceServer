@@ -37,6 +37,8 @@ appengine-generated/
 *.ipr
 *.iws
 
+target/
+
 ## Plugin-specific files:
 
 # IntelliJ
