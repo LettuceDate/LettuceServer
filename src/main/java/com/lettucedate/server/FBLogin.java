@@ -41,7 +41,6 @@ public class FBLogin extends HttpServlet {
             gson.toJson(newUser, out);
             out.flush();
             out.close();
-            DBHelper.ReleaseConnection();
 
         } else {
             // no luck
