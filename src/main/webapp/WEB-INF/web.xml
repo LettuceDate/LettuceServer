@@ -27,6 +27,30 @@
         <servlet-class>com.lettucedate.server.YelpSearch</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>ActivityNames</servlet-name>
+        <servlet-class>com.lettucedate.server.admin.ActivityNames</servlet-class>
+    </servlet>
+
+    <servlet>
+        <servlet-name>DateServlet</servlet-name>
+        <servlet-class>com.lettucedate.server.DateServlet</servlet-class>
+    </servlet>
+
+
+
+    <!-- servlet mappings -->
+    <servlet-mapping>
+        <servlet-name>DateServlet</servlet-name>
+        <url-pattern>/api/v1/date</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet-mapping>
+        <servlet-name>ActivityNames</servlet-name>
+        <url-pattern>/api/v1/admin/activitynames</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>YelpSearch</servlet-name>
         <url-pattern>/api/v1/yelpsearch</url-pattern>
@@ -62,7 +86,6 @@
         <servlet-name>VenueEntry</servlet-name>
         <jsp-file>/VenueEntry.jsp</jsp-file>
     </servlet>
-
 
 
     <servlet-mapping>
