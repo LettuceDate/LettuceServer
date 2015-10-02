@@ -8,36 +8,35 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Created by ultradad on 9/23/15.
+ * Created by ultradad on 10/2/15.
  */
-public class ActivityType  {
-    private static final Logger log = Logger.getLogger(ActivityType.class.getName());
+public class EthnicityType {
+    private static final Logger log = Logger.getLogger(EthnicityType.class.getName());
 
     public int id;
     public String typename;
     public String icon;
 
-    private static List<ActivityType> _savedTypeList = null;
+    private static List<EthnicityType> _savedTypeList = null;
 
-    public static List<ActivityType>  GetActivityTypes() {
-        return GetActivityTypes(false);
+    public static List<EthnicityType>  GetEthnictyTypes() {
+        return GetEthnictyTypes(false);
     }
-    public static List<ActivityType>  GetActivityTypes(Boolean force) {
+    public static List<EthnicityType>  GetEthnictyTypes(Boolean force) {
 
         if ((_savedTypeList == null) || force) {
             _savedTypeList = new ArrayList<>();
-
             Connection connection = DBHelper.GetConnection();
             try {
-                ResultSet rs = connection.createStatement().executeQuery("SELECT * from LettuceMaster.activitytypes");
+                ResultSet rs = connection.createStatement().executeQuery("SELECT * from LettuceMaster.ethnicities");
 
                 while (rs.next()) {
-                    ActivityType newType = ActivityType.CreateFromRecordSet(rs);
+                    EthnicityType newType = EthnicityType.CreateFromRecordSet(rs);
                     if (newType != null)
                         _savedTypeList.add(newType);
                 }
             } catch (java.sql.SQLException exp) {
-                log.log(Level.SEVERE, String.format("error getting activity types - %s", exp.getMessage()));
+                log.log(Level.SEVERE, String.format("error getting ethnicity types - %s", exp.getMessage()));
             } finally {
                 DBHelper.CloseConnection(connection);
             }
@@ -46,8 +45,8 @@ public class ActivityType  {
         return _savedTypeList;
     }
 
-    public static ActivityType CreateFromRecordSet(ResultSet rs) {
-        ActivityType newActivity = new ActivityType();
+    public static EthnicityType CreateFromRecordSet(ResultSet rs) {
+        EthnicityType newActivity = new EthnicityType();
         try {
             newActivity.id = rs.getInt("id");
             newActivity.typename = rs.getString("typename");
@@ -55,7 +54,7 @@ public class ActivityType  {
 
         }
         catch (Exception exp) {
-            log.log(Level.SEVERE, String.format("error parsing activity type:  %s", exp.getMessage()));
+            log.log(Level.SEVERE, String.format("error parsing ethnicity type:  %s", exp.getMessage()));
             newActivity = null;
         }
 

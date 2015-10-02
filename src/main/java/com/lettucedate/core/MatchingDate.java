@@ -1,9 +1,6 @@
 package com.lettucedate.core;
 
-import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -26,14 +23,16 @@ public class MatchingDate extends BaseDate {
 
     public static List<MatchingDate> GetDatesForUser(long userId) {
         List<MatchingDate>  resultList = null;
-
+        Connection connection = DBHelper.GetConnection();
         try {
-            CallableStatement statement = DBHelper.GetConnection().prepareCall("{call GetUserMatchingDates(?)}");
+            CallableStatement statement = connection.prepareCall("{call LettuceMaster.GetUserMatchingDates(?)}");
             statement.setLong(1, userId);
             resultList = DoMatchingDateQuery(statement);
         } catch (SQLException exp) {
             log.log(Level.SEVERE, exp.getMessage());
             resultList = new ArrayList<>();
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
         return resultList;
@@ -55,6 +54,25 @@ public class MatchingDate extends BaseDate {
 
         return dateList;
 
+    }
+
+    public static int CountDatesForUser(long userId) {
+        int resultCount = 0;
+        Connection connection = DBHelper.GetConnection();
+        try {
+            CallableStatement statement = connection.prepareCall("{call LettuceMaster.CountUserMatchingDates(?)}");
+            statement.setLong(1, userId);
+            ResultSet rs  = statement.executeQuery();
+            if (rs.next()) {
+                resultCount = rs.getInt(1);
+            }
+        } catch (SQLException exp) {
+            log.log(Level.SEVERE, exp.getMessage());
+        } finally {
+            DBHelper.CloseConnection(connection);
+        }
+
+        return resultCount;
     }
 
     public void InitFromResultSet(ResultSet rs) {

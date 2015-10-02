@@ -2,6 +2,8 @@ package com.lettucedate.api;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.lettucedate.core.FacebookLocation;
+import com.lettucedate.core.FacebookLocationWrapper;
 import org.apache.commons.codec.binary.Base64;
 
 import javax.crypto.Mac;
@@ -98,7 +100,7 @@ public  class Authenticator {
 
             baseURL = "https://graph.facebook.com/me?";
             baseURL += "access_token=" + accessToken;
-            baseURL += "&fields=name,id,birthday,first_name,gender,last_name,interested_in";
+            baseURL += "&fields=name,id,birthday,first_name,gender,last_name,interested_in,location";
             baseURL += "&client_id=" + FBAppId;
             baseURL += "&appsecret_proof=" + serverProof;
             url = new URL(baseURL);
@@ -115,6 +117,33 @@ public  class Authenticator {
                 // the ids do not match - bad!!
                 log.log(Level.SEVERE, "Facebook ID#s do not match!");
                 return false;
+            }
+
+            // Update the Facebook location...
+            if (fbUser.location != null) {
+                baseURL = "https://graph.facebook.com/" + fbUser.location.id + "?";
+                baseURL += "access_token=" + accessToken;
+                baseURL += "&fields=location";
+                baseURL += "&client_id=" + FBAppId;
+                baseURL += "&appsecret_proof=" + serverProof;
+                url = new URL(baseURL);
+                reader = new BufferedReader(new InputStreamReader(url.openStream()));
+                resultStr = "";
+
+                while ((line = reader.readLine()) != null) {
+                    resultStr += line;
+                }
+                reader.close();
+
+                FacebookLocationWrapper locDetail = gson.fromJson(resultStr, FacebookLocationWrapper.class);
+                fbUser.location.city = locDetail.location.city;
+                fbUser.location.country = locDetail.location.country;
+                fbUser.location.latitude = locDetail.location.latitude;
+                fbUser.location.longitude = locDetail.location.longitude;
+                fbUser.location.region = locDetail.location.region;
+                fbUser.location.state = locDetail.location.state;
+                fbUser.location.street = locDetail.location.street;
+                fbUser.location.zip  = locDetail.location.zip;
             }
 
             // then, see if the user exists and create it if it doesn't

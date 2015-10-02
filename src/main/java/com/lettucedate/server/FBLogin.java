@@ -34,7 +34,6 @@ public class FBLogin extends HttpServlet {
             long userId = Authenticator.CurrentUserId(session);
             UserRecord newUser = UserRecord.FindByID(userId);
             log.log(Level.INFO, String.format("Logging in as %s", newUser.nickname));
-            DBHelper.ReleaseConnection();
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();
             Gson gson = new GsonBuilder().create();

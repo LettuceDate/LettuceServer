@@ -36,7 +36,6 @@ public class DateServlet extends HttpServlet {
 
             sentDate.Create();
 
-            DBHelper.ReleaseConnection();
             BaseDate newDate = sentDate;
 
             response.setContentType("application/json");
@@ -77,8 +76,6 @@ public class DateServlet extends HttpServlet {
                     dateList = BaseDate.GetUsersOwnDates(currentUserId);
                 }
 
-
-                DBHelper.ReleaseConnection();
                 Gson gson = new GsonBuilder().create();
                 response.setContentType("application/json");
                 response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
@@ -96,7 +93,7 @@ public class DateServlet extends HttpServlet {
 
                 if (matches != null) {
                     // returning matching dates
-                    resultCount = BaseDate.CountDatesForUser(currentUserId);
+                    resultCount = MatchingDate.CountDatesForUser(currentUserId);
 
                 } else if (booked != null) {
                     // return booked dates
@@ -106,7 +103,7 @@ public class DateServlet extends HttpServlet {
                     // return my own dates
                     resultCount = BaseDate.CountUsersOwnDates(currentUserId);
                 }
-                DBHelper.ReleaseConnection();
+
                 Gson gson = new GsonBuilder().create();
                 response.setContentType("application/json");
                 response.setStatus(HttpStatusCodes.STATUS_CODE_OK);

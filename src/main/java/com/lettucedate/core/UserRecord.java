@@ -2,11 +2,14 @@ package com.lettucedate.core;
 
 import com.google.api.client.util.Joiner;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+
+import com.google.cloud.sql.jdbc.Statement;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -17,26 +20,35 @@ public class UserRecord implements BaseDAO {
     public String nickname;
     public String firstname;
     public String lastname;
+    public String fullname;
     public Date dob;
     public String facebookid;
     public Integer ethnicity;
     public Integer gender;
+    public String description;
+    public String city;
+    public String state;
+    public String zipcode;
+    public String locationname;
 
     public static UserRecord FindByID(Long searchId) {
         UserRecord newUser = null;
+        Connection connection = DBHelper.GetConnection();
         try {
-            PreparedStatement statement = DBHelper.PrepareStatement("SELECT * FROM LettuceMaster.users WHERE id=?", false);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM LettuceMaster.users WHERE id=?");
             statement.setLong(1, searchId);
-            ResultSet theResults = DBHelper.ExecuteQuery(statement);
+            ResultSet theResults = statement.executeQuery();
 
             if (theResults.next()) {
                 newUser = CreateFromRecordSet(theResults);
             }
         }
-        catch (Exception exp)
-        {
+        catch (Exception exp) {
             System.out.println(exp.getMessage());
+        }  finally {
+            DBHelper.CloseConnection(connection);
         }
+
         return newUser;
     }
 
@@ -51,6 +63,13 @@ public class UserRecord implements BaseDAO {
             newUser.facebookid = rs.getString("facebookid");
             newUser.ethnicity = rs.getInt("ethnicity");
             newUser.gender = rs.getInt("gender");
+            newUser.fullname = rs.getString("fullname");
+            newUser.description = rs.getString("description");
+            newUser.city = rs.getString("city");
+            newUser.state = rs.getString("state");
+            newUser.zipcode = rs.getString("zipcode");
+            newUser.zipcode = rs.getString("locationname");
+
         }
         catch (Exception exp) {
             System.out.println(exp.getMessage());
@@ -61,11 +80,11 @@ public class UserRecord implements BaseDAO {
 
     public static UserRecord FindByFBID(String searchId) {
         UserRecord newUser = null;
+        Connection connection = DBHelper.GetConnection();
         try {
-            PreparedStatement statement = DBHelper.PrepareStatement("SELECT * FROM LettuceMaster.users WHERE facebookid=?", false);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM LettuceMaster.users WHERE facebookid=?");
             statement.setString(1, searchId);
-            ResultSet theResults = DBHelper.ExecuteQuery(statement);
-
+            ResultSet theResults = statement.executeQuery();
             if (theResults.next()) {
                 newUser = CreateFromRecordSet(theResults);
             }
@@ -73,12 +92,16 @@ public class UserRecord implements BaseDAO {
         catch (Exception exp)
         {
             System.out.println(exp.getMessage());
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
+
         return newUser;
     }
 
     public Boolean Create() {
         Boolean didIt = false;
+        Connection connection = DBHelper.GetConnection();
         try {
 
             int index = 1;
@@ -123,11 +146,43 @@ public class UserRecord implements BaseDAO {
                 values.add("?");
             }
 
+            if (fullname != null) {
+                columnNames.add("fullname");
+                values.add("?");
+            }
+
+            if (fullname != null) {
+                columnNames.add("city");
+                values.add("?");
+            }
+
+            if (fullname != null) {
+                columnNames.add("state");
+                values.add("?");
+            }
+
+            if (fullname != null) {
+                columnNames.add("zipcode");
+                values.add("?");
+            }
+
+            if (fullname != null) {
+                columnNames.add("locationname");
+                values.add("?");
+            }
+
+            if (description != null) {
+                columnNames.add("description");
+                values.add("?");
+            }
+
+
+
             statementStr += StringUtils.join(columnNames, ", ") + ") VALUES ( ";
 
             statementStr += StringUtils.join(values, ", ") + ")";
 
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, true);
+            PreparedStatement statement = connection.prepareStatement(statementStr, Statement.RETURN_GENERATED_KEYS);
 
             // fill in the statement
             if (nickname != null) {
@@ -158,6 +213,31 @@ public class UserRecord implements BaseDAO {
                 statement.setInt(index++, gender);
             }
 
+            if (fullname != null) {
+                statement.setString(index++, fullname);
+            }
+
+            if (city != null) {
+                statement.setString(index++, city);
+            }
+
+            if (state != null) {
+                statement.setString(index++, state);
+            }
+
+            if (zipcode != null) {
+                statement.setString(index++, zipcode);
+            }
+
+            if (locationname != null) {
+                statement.setString(index++, locationname);
+            }
+
+            if (description != null) {
+                statement.setString(index++, description);
+            }
+
+
             statement.executeUpdate();
             ResultSet rs = statement.getGeneratedKeys();
             if (rs.next()){
@@ -168,6 +248,8 @@ public class UserRecord implements BaseDAO {
             didIt = true;
         } catch (Exception exp) {
             System.out.println(exp.getMessage());
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
 
@@ -177,6 +259,7 @@ public class UserRecord implements BaseDAO {
 
     public Boolean Update() {
         Boolean didIt = false;
+        Connection connection = DBHelper.GetConnection();
         try {
 
             int index = 1;
@@ -206,10 +289,33 @@ public class UserRecord implements BaseDAO {
                 columnNames.add("gender = ?");
             }
 
+            if (fullname != null) {
+                columnNames.add("fullname = ?");
+            }
+
+            if (description != null) {
+                columnNames.add("description = ?");
+            }
+
+            if (city != null) {
+                columnNames.add("city = ?");
+            }
+
+            if (state != null) {
+                columnNames.add("state = ?");
+            }
+
+            if (zipcode != null) {
+                columnNames.add("zipcode = ?");
+            }
+
+            if (locationname != null) {
+                columnNames.add("locationname = ?");
+            }
+
             statementStr += StringUtils.join(columnNames, ", ") + " WHERE id = ?";
 
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, false);
-
+            PreparedStatement statement = connection.prepareStatement(statementStr);
             // fill in the statement
             if (firstname != null) {
                 statement.setString(index++, firstname);
@@ -231,6 +337,30 @@ public class UserRecord implements BaseDAO {
                 statement.setInt(index++, gender);
             }
 
+            if (fullname != null) {
+                statement.setString(index++, fullname);
+            }
+
+            if (description != null) {
+                statement.setString(index++, description);
+            }
+
+            if (city != null) {
+                statement.setString(index++, city);
+            }
+
+            if (state != null) {
+                statement.setString(index++, state);
+            }
+
+            if (zipcode != null) {
+                statement.setString(index++, zipcode);
+            }
+
+            if (locationname != null) {
+                statement.setString(index++, locationname);
+            }
+
             // set the id
             statement.setLong(index++, id);
 
@@ -240,6 +370,8 @@ public class UserRecord implements BaseDAO {
             didIt = true;
         } catch (Exception exp) {
             System.out.println(exp.getMessage());
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
 
@@ -275,17 +407,32 @@ public class UserRecord implements BaseDAO {
         }
 
         if (fbUser.gender != null) {
+            Connection connection = DBHelper.GetConnection();
             try {
                 String queryString = "SELECT id FROM LettuceMaster.genders WHERE typename = ?";
-                PreparedStatement statement = DBHelper.PrepareStatement(queryString, false);
+                PreparedStatement statement = connection.prepareStatement(queryString);
                 statement.setString(1, fbUser.gender);
-                ResultSet rs = DBHelper.ExecuteQuery(statement);
+                ResultSet rs = statement.executeQuery();
                 if (rs.next()) {
                     newUser.gender = rs.getInt("id");
                 }
             } catch (java.sql.SQLException exp) {
                 System.out.println(exp.getMessage());
+            } finally {
+                DBHelper.CloseConnection(connection);
             }
+        }
+
+        if (fbUser.location != null) {
+            if (fbUser.location.city != null)
+                newUser.city = fbUser.location.city;
+            if (fbUser.location.state != null)
+                newUser.state = fbUser.location.state    ;
+            if (fbUser.location.zip != null)
+                newUser.zipcode = fbUser.location.zip;
+            if (fbUser.location.name != null)
+                newUser.locationname = fbUser.location.name;
+
         }
 
         return newUser;
@@ -309,6 +456,12 @@ public class UserRecord implements BaseDAO {
             }
         }
 
+        if (fbUser.name != null) {
+            if ((fullname == null) || (fbUser.name.compareTo(fullname) != 0)) {
+                fullname = fbUser.name;
+                madeChange = true;
+            }
+        }
         if (fbUser.birthday != null) {
             SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
             try {
@@ -325,23 +478,42 @@ public class UserRecord implements BaseDAO {
 
         if (fbUser.gender != null) {
             if (fbUser.gender != null) {
-                try {
-                    String queryString = "SELECT id FROM LettuceMaster.genders WHERE typename = ?";
-                    PreparedStatement statement = DBHelper.PrepareStatement(queryString, false);
-                    statement.setString(1, fbUser.gender);
-                    ResultSet rs = DBHelper.ExecuteQuery(statement);
-                    if (rs.next()) {
-                        int theGender = rs.getInt("id");
-                        if ((gender == null) || (theGender != gender)) {
-                            gender = theGender;
+                for (GenderType curGender : GenderType.GetGenderTypes()) {
+                    if (curGender.typename.compareTo(fbUser.gender) == 0) {
+                        if ((gender == null) || (curGender.id != gender)) {
+                            gender = curGender.id;
                             madeChange = true;
                         }
                     }
-                } catch (java.sql.SQLException exp) {
-                    System.out.println(exp.getMessage());
                 }
             }
+        }
 
+        if (fbUser.location != null) {
+            if (fbUser.location.city != null) {
+                if ((city == null) || (fbUser.location.city.compareTo(city) != 0)) {
+                    city = fbUser.location.city;
+                    madeChange = true;
+                }
+            }
+            if (fbUser.location.state != null) {
+                if ((state == null) || (fbUser.location.state.compareTo(state) != 0)) {
+                    state = fbUser.location.state;
+                    madeChange = true;
+                }
+            }
+            if (fbUser.location.zip != null) {
+                if ((zipcode == null) || (fbUser.location.zip.compareTo(zipcode) != 0)) {
+                    zipcode = fbUser.location.zip;
+                    madeChange = true;
+                }
+            }
+            if (fbUser.location.name != null) {
+                if ((locationname == null) || (fbUser.location.name.compareTo(locationname) != 0)) {
+                    locationname = fbUser.location.name;
+                    madeChange = true;
+                }
+            }
         }
 
         if (madeChange) {
@@ -351,7 +523,4 @@ public class UserRecord implements BaseDAO {
 
         return madeChange;
     }
-
-
-
 }

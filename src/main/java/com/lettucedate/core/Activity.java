@@ -1,7 +1,9 @@
 package com.lettucedate.core;
 
+import com.google.cloud.sql.jdbc.Statement;
 import org.apache.commons.lang3.StringUtils;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,6 +28,8 @@ public class Activity {
 
     public Boolean Create() {
         Boolean didIt = false;
+        Connection connection = DBHelper.GetConnection();
+
         try {
 
             int index = 1;
@@ -57,8 +61,7 @@ public class Activity {
 
             statementStr += StringUtils.join(values, ", ") + ")";
 
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, true);
-
+            PreparedStatement statement = connection.prepareStatement(statementStr, Statement.RETURN_GENERATED_KEYS);
             // fill in the statement
             if (description != null) {
                 statement.setString(index++, description);
@@ -82,6 +85,8 @@ public class Activity {
             didIt = true;
         } catch (Exception exp) {
             System.out.println(exp.getMessage());
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
 
@@ -108,9 +113,10 @@ public class Activity {
     public static ArrayList<Activity>    GetActivitiesForDate(Long dateid) {
         ArrayList<Activity> activityList = new ArrayList<>();
 
+        Connection connection = DBHelper.GetConnection();
         try {
             String statementStr = "SELECT * FROM LettuceMaster.activities WHERE dateid = ?";
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, false);
+            PreparedStatement statement = connection.prepareStatement(statementStr);
             statement.setLong(1, dateid);
             ResultSet rs = statement.executeQuery();
 
@@ -118,8 +124,10 @@ public class Activity {
                 Activity newActivity = Activity.CreateFromRecordSet(rs);
                 activityList.add(newActivity);
             }
-        }catch (SQLException exp) {
+        } catch (SQLException exp) {
             log.log(Level.SEVERE, exp.getMessage());
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
         return activityList;

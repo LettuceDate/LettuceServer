@@ -68,7 +68,6 @@ public class AddVenue extends HttpServlet {
             newVenue.Create();
 
             // write it to the user
-            DBHelper.ReleaseConnection();
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();
             Gson gson = new GsonBuilder().create();

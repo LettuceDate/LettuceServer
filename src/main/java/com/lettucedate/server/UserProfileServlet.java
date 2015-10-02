@@ -34,7 +34,6 @@ public class UserProfileServlet extends HttpServlet {
             String userIdStr = request.getParameter("id");
             Long userId = Long.parseLong(userIdStr);
             UserRecord newUser = UserRecord.FindByID(userId);
-            DBHelper.ReleaseConnection();
             response.setContentType("application/json");
             PrintWriter out = response.getWriter();
             Gson gson = new GsonBuilder().create();
@@ -61,7 +60,6 @@ public class UserProfileServlet extends HttpServlet {
             if ((firstNameStr != null) || (lastNameStr != null) ||
                     (dobStr != null) || (ethnicityStr != null) || (genderStr != null)) {
                 // Update the record
-                DBHelper.EnsureConnection();
                 UserRecord newUser = new UserRecord();
                 newUser.id = currentUserId;
                 if (firstNameStr != null)
@@ -82,7 +80,6 @@ public class UserProfileServlet extends HttpServlet {
                 }
 
                 newUser.Update();
-                DBHelper.ReleaseConnection();
                 response.setStatus(HttpServletResponse.SC_OK);
             } else {
                 response.setStatus(HttpServletResponse.SC_NO_CONTENT);

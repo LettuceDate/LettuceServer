@@ -4,9 +4,7 @@ import com.google.appengine.repackaged.org.joda.time.format.DateTimeParser;
 import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Array;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -61,6 +59,7 @@ public class BaseDate {
 
     public Boolean Create() {
         Boolean didIt = false;
+        Connection connection = DBHelper.GetConnection();
         try {
 
             int index = 1;
@@ -101,7 +100,7 @@ public class BaseDate {
 
             statementStr += StringUtils.join(values, ", ") + ")";
 
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, true);
+            PreparedStatement statement = connection.prepareStatement(statementStr, Statement.RETURN_GENERATED_KEYS);
 
             // fill in the statement
             if (title != null) {
@@ -143,6 +142,8 @@ public class BaseDate {
             didIt = true;
         } catch (Exception exp) {
             System.out.println(exp.getMessage());
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
 
@@ -157,8 +158,8 @@ public class BaseDate {
             this.description = rs.getString("description");
             this.paymentstyle = rs.getInt("paymentstyle");
             this.proposerid = rs.getLong("proposerid");
-            this.active = rs.getInt("active") == 1;
             this.selfie = rs.getString("selfie");
+            this.active = rs.getInt("active") == 1;
             this.booked = rs.getInt("booked") == 1;
 
             this.activities = Activity.GetActivitiesForDate(this.id);
@@ -199,14 +200,17 @@ public class BaseDate {
     public static List<BaseDate>    GetBookedDatesForUser(long userId) {
         List<BaseDate> resultList = null;
 
+        Connection connection = DBHelper.GetConnection();
         try {
             String statementStr = "SELECT * FROM LettuceMaster.dates WHERE proposerid = ? and booked = 1";
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, false);
+            PreparedStatement statement = connection.prepareStatement(statementStr);
             statement.setLong(1, userId);
             resultList = DoDateQuery(statement);
         } catch (SQLException exp) {
             log.log(Level.SEVERE, exp.getMessage());
             resultList = new ArrayList<>();
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
         return resultList;
@@ -215,43 +219,31 @@ public class BaseDate {
     public static List<BaseDate>    GetUsersOwnDates(long userId) {
         List<BaseDate>  resultList = null;
 
+        Connection connection = DBHelper.GetConnection();
         try {
             String statementStr = "SELECT * FROM LettuceMaster.dates WHERE proposerid = ?";
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, false);
+            PreparedStatement statement = connection.prepareStatement(statementStr);
             statement.setLong(1, userId);
             resultList = DoDateQuery(statement);
         } catch (SQLException exp) {
             log.log(Level.SEVERE, exp.getMessage());
             resultList = new ArrayList<>();
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
         return resultList;
     }
 
-    public static int CountDatesForUser(long userId) {
-        int resultCount = 0;
 
-        try {
-            String statementStr = "SELECT COUNT(id) FROM LettuceMaster.dates WHERE proposerid != ?";
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, false);
-            statement.setLong(1, userId);
-            ResultSet rs = statement.executeQuery();
-            if (rs.next()) {
-                resultCount = rs.getInt(1);
-            }
-        } catch (SQLException exp) {
-            log.log(Level.SEVERE, exp.getMessage());
-        }
-
-        return resultCount;
-    }
 
     public static int CountBookedDatesForUser(long userId) {
         int resultCount = 0;
 
+        Connection connection = DBHelper.GetConnection();
         try {
             String statementStr = "SELECT COUNT(id) FROM LettuceMaster.dates WHERE proposerid = ? and booked = 1";
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, false);
+            PreparedStatement statement = connection.prepareStatement(statementStr);
             statement.setLong(1, userId);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -259,6 +251,8 @@ public class BaseDate {
             }
         } catch (SQLException exp) {
             log.log(Level.SEVERE, exp.getMessage());
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
         return resultCount;
@@ -267,9 +261,10 @@ public class BaseDate {
     public static int CountUsersOwnDates(long userId) {
         int resultCount = 0;
 
+        Connection connection = DBHelper.GetConnection();
         try {
             String statementStr = "SELECT COUNT(id) FROM LettuceMaster.dates WHERE proposerid = ?";
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, false);
+            PreparedStatement statement = connection.prepareStatement(statementStr);
             statement.setLong(1, userId);
             ResultSet rs = statement.executeQuery();
             if (rs.next()) {
@@ -277,6 +272,8 @@ public class BaseDate {
             }
         } catch (SQLException exp) {
             log.log(Level.SEVERE, exp.getMessage());
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
         return resultCount;
