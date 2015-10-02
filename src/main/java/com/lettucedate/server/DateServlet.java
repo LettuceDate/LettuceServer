@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.lettucedate.api.Authenticator;
 import com.lettucedate.core.BaseDate;
 import com.lettucedate.core.DBHelper;
+import com.lettucedate.core.MatchingDate;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -61,10 +62,11 @@ public class DateServlet extends HttpServlet {
 
             if (countStr == null) {
                 List<BaseDate> dateList = null;
+                List<MatchingDate> matchList = null;
 
                 if (matches != null) {
                     // returning matching dates
-                    dateList = BaseDate.GetDatesForUser(currentUserId);
+                    matchList = MatchingDate.GetDatesForUser(currentUserId);
 
                 } else if (booked != null) {
                     // return booked dates
@@ -81,7 +83,11 @@ public class DateServlet extends HttpServlet {
                 response.setContentType("application/json");
                 response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
                 PrintWriter out = response.getWriter();
-                gson.toJson(dateList, out);
+                if (matchList != null)
+                    gson.toJson(matchList, out);
+                else
+                    gson.toJson(dateList, out);
+
                 out.flush();
                 out.close();
             } else {

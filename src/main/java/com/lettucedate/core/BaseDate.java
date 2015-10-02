@@ -149,24 +149,29 @@ public class BaseDate {
         return didIt;
     }
 
-    public static BaseDate CreateFromRecordSet(ResultSet rs) {
-        BaseDate newDate = new BaseDate();
+    public void InitFromResultSet(ResultSet rs) {
         try {
-            newDate.id = rs.getLong("id");
-            newDate.title = rs.getString("title");
-            newDate.starttime = rs.getDate("starttime");
-            newDate.description = rs.getString("description");
-            newDate.paymentstyle = rs.getInt("paymentstyle");
-            newDate.proposerid = rs.getLong("proposerid");
-            newDate.active = rs.getInt("active") == 1;
-            newDate.selfie = rs.getString("selfie");
-            newDate.booked = rs.getInt("booked") == 1;
+            this.id = rs.getLong("id");
+            this.title = rs.getString("title");
+            this.starttime = rs.getDate("starttime");
+            this.description = rs.getString("description");
+            this.paymentstyle = rs.getInt("paymentstyle");
+            this.proposerid = rs.getLong("proposerid");
+            this.active = rs.getInt("active") == 1;
+            this.selfie = rs.getString("selfie");
+            this.booked = rs.getInt("booked") == 1;
 
-            newDate.activities = Activity.GetActivitiesForDate(newDate.id);
+            this.activities = Activity.GetActivitiesForDate(this.id);
         }
         catch (Exception exp) {
             System.out.println(exp.getMessage());
         }
+
+    }
+
+    public static BaseDate CreateFromRecordSet(ResultSet rs) {
+        BaseDate newDate = new BaseDate();
+        newDate.InitFromResultSet(rs);
 
         return newDate;
     }
@@ -189,21 +194,7 @@ public class BaseDate {
 
     }
 
-    public static List<BaseDate>    GetDatesForUser(long userId) {
-        List<BaseDate>  resultList = null;
 
-        try {
-            String statementStr = "SELECT * FROM LettuceMaster.dates WHERE proposerid != ?";
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, false);
-            statement.setLong(1, userId);
-            resultList = DoDateQuery(statement);
-        } catch (SQLException exp) {
-            log.log(Level.SEVERE, exp.getMessage());
-            resultList = new ArrayList<>();
-        }
-
-        return resultList;
-    }
 
     public static List<BaseDate>    GetBookedDatesForUser(long userId) {
         List<BaseDate> resultList = null;
