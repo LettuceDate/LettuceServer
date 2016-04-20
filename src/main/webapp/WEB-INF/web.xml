@@ -43,6 +43,10 @@
         <servlet-class>com.lettucedate.server.admin.EthnicityNames</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>NotifyServlet</servlet-name>
+        <servlet-class>com.lettucedate.server.NotifyServlet</servlet-class>
+    </servlet>
 
     <!-- servlet mappings -->
 
@@ -91,6 +95,11 @@
     <servlet-mapping>
         <servlet-name>healthcheck</servlet-name>
         <url-pattern>/api/v1/healthcheck</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>NotifyServlet</servlet-name>
+        <url-pattern>/api/v1/notifications</url-pattern>
     </servlet-mapping>
 
 
