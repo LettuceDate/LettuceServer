@@ -31,19 +31,16 @@ public class DBHelper {
                 } else {
                     // Connecting from an external network.
                     Class.forName("com.mysql.jdbc.Driver");
-                    url = "jdbc:mysql://173.194.244.58:3306";
+                    //url = "jdbc:mysql://173.194.244.58:3306";
+                    //url = "jdbc:mysql://2001:4860:4864:1:47c4:133a:7346:81b7:3306";
+                    url = "jdbc:mysql://address=(protocol=tcp)(host=2001:4860:4864:1:47c4:133a:7346:81b7)(port=3306)";
+
                     _currentConnection = DriverManager.getConnection(url, "davevr", "Love4Runess");
                 }
-
-
-
-
-                }
-                catch (ClassNotFoundException exp) {
-                    System.out.println(exp.getMessage());
-                }
-                catch (SQLException sqlexp) {
-                    System.out.println(sqlexp.getMessage());
+            } catch (ClassNotFoundException exp) {
+                System.out.println(exp.getMessage());
+            } catch (SQLException sqlexp) {
+                System.out.println(sqlexp.getMessage());
 
             }
 
