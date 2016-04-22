@@ -2,8 +2,11 @@ package com.lettucedate.core;
 
 import com.google.appengine.api.utils.SystemProperty;
 
-import javax.swing.plaf.nimbus.State;
-import java.sql.*;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -11,6 +14,7 @@ import java.util.logging.Logger;
  */
 public class DBHelper {
     private static final Logger log = Logger.getLogger(DBHelper.class.getName());
+
     public static Connection _currentConnection;
 
     public static Connection GetConnection() {
@@ -41,67 +45,20 @@ public class DBHelper {
                 System.out.println(exp.getMessage());
             } catch (SQLException sqlexp) {
                 System.out.println(sqlexp.getMessage());
-
-            }
-
-            return _currentConnection;
-        }
-    }
-
-    public static void EnsureConnection() {
-        GetConnection();
-    }
-
-    public static void ReleaseConnection() {
-        if (_currentConnection != null) {
-            try {
-                _currentConnection.close();
-                _currentConnection = null;
-            }
-            catch (Exception exp) {
-                System.out.println(exp.getMessage());
             }
         }
+
+        return _currentConnection;
     }
 
-    public static PreparedStatement PrepareStatement(String theStatement, Boolean returnKeys) {
-        PreparedStatement statement = null;
-
+    public static void CloseConnection(Connection conn) {
         try {
-            if (returnKeys)
-                statement = GetConnection().prepareStatement(theStatement, Statement.RETURN_GENERATED_KEYS);
-            else
-                statement = GetConnection().prepareStatement(theStatement);
-
-        } catch (Exception exp) {
-            System.out.println(exp.getMessage());
+            conn.close();
         }
-
-        return statement;
-    }
-
-    public static ResultSet ExecuteQuery(String theQuery) {
-        ResultSet theResult = null;
-        try {
-            theResult = GetConnection().createStatement().executeQuery(theQuery);
+        catch (SQLException exp)
+        {
+            log.log(Level.SEVERE, "error closing connection: %s", exp.getMessage());
         }
-        catch (Exception exp) {
-            System.out.println(exp.getMessage());
-        }
-
-        return theResult;
-    }
-
-    public static ResultSet ExecuteQuery(PreparedStatement theStatement) {
-        ResultSet theResult = null;
-        try {
-            theResult = theStatement.executeQuery();
-        }
-        catch (Exception exp) {
-            System.out.println(exp.getMessage());
-        }
-
-        return theResult;
     }
 
 }

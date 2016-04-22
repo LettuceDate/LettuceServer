@@ -1,7 +1,9 @@
 package com.lettucedate.core;
 
+import com.google.cloud.sql.jdbc.Statement;
 import org.apache.commons.lang3.StringUtils;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ public class Venue {
 
     public Boolean Create() {
         Boolean didIt = false;
+        Connection connection = DBHelper.GetConnection();
         try {
 
             int index = 1;
@@ -58,7 +61,7 @@ public class Venue {
 
             statementStr += StringUtils.join(values, ", ") + ")";
 
-            PreparedStatement statement = DBHelper.PrepareStatement(statementStr, true);
+            PreparedStatement statement = connection.prepareStatement(statementStr, Statement.RETURN_GENERATED_KEYS);
 
             // fill in the statement
             if (name != null) {
@@ -88,12 +91,17 @@ public class Venue {
 
             // now add the activity types
             for (ActivityType curType : activityTypes) {
-                String queryString = String.format("INSERT INTO LettuceMaster.venueactvitymap (venueid, activitytypeid) VALUES (%d, %d)", id, curType.id);
-                DBHelper.ExecuteQuery(queryString);
+                String queryString = "INSERT INTO LettuceMaster.venueactvitymap (venueid, activitytypeid) VALUES (?, ?)";
+                PreparedStatement actStatement = connection.prepareStatement(queryString);
+                actStatement.setLong(1, id);
+                actStatement.setInt(2, curType.id);
+                connection.createStatement().executeQuery(queryString);
             }
             didIt = true;
         } catch (Exception exp) {
             log.log(Level.SEVERE, exp.getMessage());
+        } finally {
+            DBHelper.CloseConnection(connection);
         }
 
 

@@ -5,10 +5,7 @@
         <servlet-name>healthcheck</servlet-name>
         <servlet-class>com.lettucedate.server.healthcheck</servlet-class>
     </servlet>
-    <servlet>
-        <servlet-name>UserDates</servlet-name>
-        <servlet-class>com.lettucedate.server.UserDates</servlet-class>
-    </servlet>
+
     <servlet>
         <servlet-name>FBLogin</servlet-name>
         <servlet-class>com.lettucedate.server.FBLogin</servlet-class>
@@ -37,9 +34,33 @@
         <servlet-class>com.lettucedate.server.DateServlet</servlet-class>
     </servlet>
 
+    <servlet>
+        <servlet-name>GenderNames</servlet-name>
+        <servlet-class>com.lettucedate.server.admin.GenderNames</servlet-class>
+    </servlet>
+    <servlet>
+        <servlet-name>EthnicityNames</servlet-name>
+        <servlet-class>com.lettucedate.server.admin.EthnicityNames</servlet-class>
+    </servlet>
 
+    <servlet>
+        <servlet-name>NotifyServlet</servlet-name>
+        <servlet-class>com.lettucedate.server.NotifyServlet</servlet-class>
+    </servlet>
 
     <!-- servlet mappings -->
+
+    <servlet-mapping>
+        <servlet-name>GenderNames</servlet-name>
+        <url-pattern>/api/v1/admin/gendernames</url-pattern>
+    </servlet-mapping>
+
+
+    <servlet-mapping>
+        <servlet-name>EthnicityNames</servlet-name>
+        <url-pattern>/api/v1/admin/ethnicitynames</url-pattern>
+    </servlet-mapping>
+
     <servlet-mapping>
         <servlet-name>DateServlet</servlet-name>
         <url-pattern>/api/v1/date</url-pattern>
@@ -77,15 +98,17 @@
     </servlet-mapping>
 
     <servlet-mapping>
-        <servlet-name>UserDates</servlet-name>
-        <url-pattern>/api/v1/dates</url-pattern>
+        <servlet-name>NotifyServlet</servlet-name>
+        <url-pattern>/api/v1/notifications</url-pattern>
     </servlet-mapping>
+
 
 
     <servlet>
         <servlet-name>VenueEntry</servlet-name>
         <jsp-file>/VenueEntry.jsp</jsp-file>
     </servlet>
+
 
 
     <servlet-mapping>

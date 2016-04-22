@@ -6,6 +6,7 @@ import com.google.gson.GsonBuilder;
 import com.lettucedate.api.Authenticator;
 import com.lettucedate.core.BaseDate;
 import com.lettucedate.core.DBHelper;
+import com.lettucedate.core.MatchingDate;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -35,7 +36,6 @@ public class DateServlet extends HttpServlet {
 
             sentDate.Create();
 
-            DBHelper.ReleaseConnection();
             BaseDate newDate = sentDate;
 
             response.setContentType("application/json");
@@ -61,10 +61,11 @@ public class DateServlet extends HttpServlet {
 
             if (countStr == null) {
                 List<BaseDate> dateList = null;
+                List<MatchingDate> matchList = null;
 
                 if (matches != null) {
                     // returning matching dates
-                    dateList = BaseDate.GetDatesForUser(currentUserId);
+                    matchList = MatchingDate.GetDatesForUser(currentUserId);
 
                 } else if (booked != null) {
                     // return booked dates
@@ -75,13 +76,15 @@ public class DateServlet extends HttpServlet {
                     dateList = BaseDate.GetUsersOwnDates(currentUserId);
                 }
 
-
-                DBHelper.ReleaseConnection();
                 Gson gson = new GsonBuilder().create();
                 response.setContentType("application/json");
                 response.setStatus(HttpStatusCodes.STATUS_CODE_OK);
                 PrintWriter out = response.getWriter();
-                gson.toJson(dateList, out);
+                if (matchList != null)
+                    gson.toJson(matchList, out);
+                else
+                    gson.toJson(dateList, out);
+
                 out.flush();
                 out.close();
             } else {
@@ -90,7 +93,7 @@ public class DateServlet extends HttpServlet {
 
                 if (matches != null) {
                     // returning matching dates
-                    resultCount = BaseDate.CountDatesForUser(currentUserId);
+                    resultCount = MatchingDate.CountDatesForUser(currentUserId);
 
                 } else if (booked != null) {
                     // return booked dates
@@ -100,7 +103,7 @@ public class DateServlet extends HttpServlet {
                     // return my own dates
                     resultCount = BaseDate.CountUsersOwnDates(currentUserId);
                 }
-                DBHelper.ReleaseConnection();
+
                 Gson gson = new GsonBuilder().create();
                 response.setContentType("application/json");
                 response.setStatus(HttpStatusCodes.STATUS_CODE_OK);

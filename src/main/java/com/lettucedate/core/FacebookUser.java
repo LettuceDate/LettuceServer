@@ -11,5 +11,6 @@ public class FacebookUser {
     public String birthday;
     public String gender;
     public String interested_in;
+    public FacebookLocation location;
 
 }
