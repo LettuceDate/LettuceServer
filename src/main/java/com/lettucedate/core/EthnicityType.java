@@ -38,7 +38,7 @@ public class EthnicityType {
             } catch (java.sql.SQLException exp) {
                 log.log(Level.SEVERE, String.format("error getting ethnicity types - %s", exp.getMessage()));
             } finally {
-                DBHelper.CloseConnection(connection);
+                DBHelper.ReleaseConnection(connection);
             }
         }
 

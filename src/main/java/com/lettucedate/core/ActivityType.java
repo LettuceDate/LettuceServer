@@ -39,7 +39,7 @@ public class ActivityType  {
             } catch (java.sql.SQLException exp) {
                 log.log(Level.SEVERE, String.format("error getting activity types - %s", exp.getMessage()));
             } finally {
-                DBHelper.CloseConnection(connection);
+                DBHelper.ReleaseConnection(connection);
             }
         }
 

@@ -95,7 +95,11 @@ public  class Authenticator {
                 resultStr += line;
             }
             reader.close();
-            String accessToken = resultStr.substring(resultStr.indexOf('=') + 1, resultStr.indexOf('&'));
+            int andStrLoc = resultStr.indexOf('&');
+            if (andStrLoc == -1)
+                andStrLoc = resultStr.length();
+
+            String accessToken = resultStr.substring(resultStr.indexOf('=') + 1, andStrLoc);
             String serverProof = hmacSHA256(accessToken, FBSecret);
 
             baseURL = "https://graph.facebook.com/me?";

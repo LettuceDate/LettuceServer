@@ -39,7 +39,7 @@ public class GenderType {
             } catch (java.sql.SQLException exp) {
                 log.log(Level.SEVERE, String.format("error getting gender types - %s", exp.getMessage()));
             } finally {
-                DBHelper.CloseConnection(conn);
+                DBHelper.ReleaseConnection(conn);
             }
         }
 

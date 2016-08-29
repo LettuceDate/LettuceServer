@@ -1,7 +1,5 @@
 package com.lettucedate.core;
 
-import com.google.api.client.util.Joiner;
-
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -46,7 +44,7 @@ public class UserRecord implements BaseDAO {
         catch (Exception exp) {
             System.out.println(exp.getMessage());
         }  finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
         return newUser;
@@ -93,7 +91,7 @@ public class UserRecord implements BaseDAO {
         {
             System.out.println(exp.getMessage());
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
         return newUser;
@@ -249,7 +247,7 @@ public class UserRecord implements BaseDAO {
         } catch (Exception exp) {
             System.out.println(exp.getMessage());
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
 
@@ -371,7 +369,7 @@ public class UserRecord implements BaseDAO {
         } catch (Exception exp) {
             System.out.println(exp.getMessage());
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
 
@@ -419,7 +417,7 @@ public class UserRecord implements BaseDAO {
             } catch (java.sql.SQLException exp) {
                 System.out.println(exp.getMessage());
             } finally {
-                DBHelper.CloseConnection(connection);
+                DBHelper.ReleaseConnection(connection);
             }
         }
 

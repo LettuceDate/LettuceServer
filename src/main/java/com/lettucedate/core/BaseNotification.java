@@ -75,7 +75,7 @@ public class BaseNotification {
             log.log(Level.SEVERE, exp.getMessage());
             resultList = new ArrayList<>();
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
         return resultList;
@@ -96,7 +96,7 @@ public class BaseNotification {
         } catch (SQLException exp) {
             log.log(Level.SEVERE, exp.getMessage());
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
         return resultCount;

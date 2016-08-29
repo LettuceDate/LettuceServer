@@ -32,7 +32,7 @@ public class MatchingDate extends BaseDate {
             log.log(Level.SEVERE, exp.getMessage());
             resultList = new ArrayList<>();
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
         return resultList;
@@ -69,7 +69,7 @@ public class MatchingDate extends BaseDate {
         } catch (SQLException exp) {
             log.log(Level.SEVERE, exp.getMessage());
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
         return resultCount;

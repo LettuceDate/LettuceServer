@@ -101,7 +101,7 @@ public class Venue {
         } catch (Exception exp) {
             log.log(Level.SEVERE, exp.getMessage());
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
 

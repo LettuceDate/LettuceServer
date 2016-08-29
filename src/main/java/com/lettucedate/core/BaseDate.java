@@ -1,9 +1,7 @@
 package com.lettucedate.core;
 
-import com.google.appengine.repackaged.org.joda.time.format.DateTimeParser;
 import org.apache.commons.lang3.StringUtils;
 
-import java.lang.reflect.Array;
 import java.sql.*;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -143,7 +141,7 @@ public class BaseDate {
         } catch (Exception exp) {
             System.out.println(exp.getMessage());
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
 
@@ -210,7 +208,7 @@ public class BaseDate {
             log.log(Level.SEVERE, exp.getMessage());
             resultList = new ArrayList<>();
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
         return resultList;
@@ -229,7 +227,7 @@ public class BaseDate {
             log.log(Level.SEVERE, exp.getMessage());
             resultList = new ArrayList<>();
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
         return resultList;
@@ -252,7 +250,7 @@ public class BaseDate {
         } catch (SQLException exp) {
             log.log(Level.SEVERE, exp.getMessage());
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
         return resultCount;
@@ -273,7 +271,7 @@ public class BaseDate {
         } catch (SQLException exp) {
             log.log(Level.SEVERE, exp.getMessage());
         } finally {
-            DBHelper.CloseConnection(connection);
+            DBHelper.ReleaseConnection(connection);
         }
 
         return resultCount;
